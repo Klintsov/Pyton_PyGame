@@ -9,6 +9,9 @@ WIDTH = 450
 X0 = 50
 Y0 = 50
 R0 = 10
+DX = 10
+DY = 10
+
 ic.enable()
 
 
@@ -28,8 +31,8 @@ class Bools:
         self.x_koord = None
         self.y_koord = None
         self.r_bool = None
-        self.dx = None
-        self.dy = None
+        self.dx = []
+        self.dy = []
         self.number_bool = None
         self.flag_bool = True
         self.items = []
@@ -48,14 +51,17 @@ class Bools:
         """Перемещение мячика"""
         hc = canvas.winfo_height()
         wc = canvas.winfo_width()
-        ic(self.number_bool, canvas.coords(self.number_bool))
-        ic(hc, wc, R0, wc-R0, hc-R0)
-        if canvas.coords(self.number_bool)[0] <= R0 or canvas.coords(self.number_bool)[2] >= wc-R0:
-            self.dx = -1 * self.dx
-        elif canvas.coords(self.number_bool)[1] <= R0 or canvas.coords(self.number_bool)[3] >= hc-R0:
-            self.dy = -1 * self.dy
-        canvas.move(self.number_bool, self.dx, self.dy)
-        ic(self.number_bool, self.dx, self.dy)
+        ic(self.number_bool)
+        if canvas.coords(self.number_bool)[0] < R0:
+            self.dx[self.number_bool-1] = DX
+        if canvas.coords(self.number_bool)[2] > wc-R0:
+            self.dx[self.number_bool-1] = -1 * DX
+        if canvas.coords(self.number_bool)[1] < R0:
+            self.dy[self.number_bool-1] = DY
+        if canvas.coords(self.number_bool)[3] > hc - R0:
+            self.dy[self.number_bool-1] = -1 * DY
+        canvas.move(self.number_bool, self.dx[self.number_bool-1], self.dy[self.number_bool-1])
+        ic(self.number_bool, self.dx[self.number_bool-1], self.dy[self.number_bool-1])
         canvas.update()
 
     def erase_bool(self):
@@ -72,28 +78,31 @@ def main():
     """Главна программа"""
     root.title('Игра')
     root.geometry(f'{HEIGHT}x{WIDTH}')
-    wcc = WIDTH * 0.95
-    ic(wcc)
-    hcc = HEIGHT * 0.95
-    ic(hcc)
+    wcc = int(WIDTH * 0.95)
+    hcc = int(HEIGHT * 0.95)
     canvas.config(bg="white", width=wcc, height=hcc)
     canvas.pack(anchor='center', expand=1, side='top')
-    ic(canvas.winfo_height())
-    ic(canvas.winfo_width())
     bool = Bools()
 
-    for i in range(5):
-        bool.x_koord = round(WIDTH * random.random())
-        bool.y_koord = round(HEIGHT * random.random())
+    for i in range(2):
+        bool.x_koord = round(random.randint(DX+1, wcc-1))
+        ic(bool.x_koord)
+        bool.y_koord = round(random.randint(DY+1, hcc-1))
+        ic(bool.y_koord)
         bool.r_bool = R0
-        bool.dx = 10
-        bool.dy = 10
+        # bool.dx[i] = DX
+        # bool.dy[i] = DY
+        bool.dx.append(DX)
+        bool.dy.append(DY)
         bool.create_bool()
         ic(bool.number_bool, canvas.coords(bool.number_bool))
         bool.items.append(bool.number_bool)
 
+    ic(bool.dx, bool.dy, bool.items)
+
     while True:
         for bool.number_bool in bool.items:
+            ic(bool.number_bool)
             bool.move_bool()
             sleep(0.002)
 
